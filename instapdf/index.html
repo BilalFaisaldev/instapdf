@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bilal Faisal Arain | Full Stack Dev & QA</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Convert your CNIC front/back, documents, and multiple images into a single optimized PDF instantly. 100% private, client-side, and free.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- FontAwesome for Premium Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="loaderOverlay" class="loader-overlay">
+    <div class="spinner"></div>
+    <div id="loaderText" class="loader-text">Processing Images...</div>
+    <div class="progress-container">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <i class="fa-solid fa-file-pdf"></i>
+      <span>InstaPDF</span>
+    </div>
+    <button id="themeToggle" class="theme-toggle" title="Toggle Light/Dark Theme">
+      <i class="fa-solid fa-sun" id="themeIcon"></i>
+    </button>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-container">
+    
+    <!-- Workspace: Drop Zone and Grid -->
+    <section class="workspace">
+      <!-- Drag & Drop Zone -->
+      <div id="dropZone" class="drop-zone glass-panel">
+        <input type="file" id="fileInput" class="file-input" multiple accept="image/png, image/jpeg, image/webp">
+        <div class="drop-icon-container">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+        </div>
+        <h3>Drag & Drop your images here</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Supports JPG, PNG, and WebP. Ideal for CNIC front/back.</p>
+        <button class="btn-generate" style="box-shadow: none; padding: 0.5rem 1.25rem; font-size: 0.9rem; margin-top: 0.5rem; pointer-events: none;">
+          <i class="fa-solid fa-images"></i> Browse Files
+        </button>
+      </div>
+
+      <!-- Thumbnails Grid -->
+      <div class="glass-panel" style="padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+          <h4 style="font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-sort-amount-down" style="color: var(--accent-primary);"></i>
+            Pages & Order
+          </h4>
+          <span id="pageCount" style="font-size: 0.85rem; background: rgba(99, 102, 241, 0.1); color: var(--accent-primary); padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600;">
+            0 Pages Added
+          </span>
+        </div>
+        
+        <!-- Grid placeholder when empty -->
+        <div id="emptyState" style="text-align: center; color: var(--text-muted); padding: 4rem 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; flex-grow: 1;">
+          <i class="fa-regular fa-image" style="font-size: 3rem; color: var(--border-color);"></i>
+          <p>No images uploaded yet. Upload images to arrange them.</p>
+        </div>
+        
+        <!-- Sorting Grid -->
+        <ul id="thumbnailGrid" class="thumbnail-grid" style="display: none;"></ul>
+      </div>
+    </section>
+
+    <!-- Sidebar: PDF Settings & Actions -->
+    <aside class="sidebar">
+      
+      <!-- Settings Panel -->
+      <div class="glass-panel option-group">
+        <h3 class="option-title">
+          <i class="fa-solid fa-sliders" style="color: var(--accent-secondary);"></i>
+          PDF Settings
+        </h3>
+        
+        <!-- Filename Input -->
+        <div class="form-control">
+          <label for="pdfName">Output Filename</label>
+          <input type="text" id="pdfName" value="InstaPDF_Document" placeholder="Enter file name">
+        </div>
+
+        <!-- Page Size Option -->
+        <div class="form-control">
+          <label for="pageSize">Page Size</label>
+          <select id="pageSize">
+            <option value="auto" selected>Auto (Fit to Image size - Best for CNIC)</option>
+            <option value="a4">A4 Standard</option>
+            <option value="letter">US Letter</option>
+          </select>
+        </div>
+
+        <!-- Layout Option -->
+        <div class="form-control" id="orientationControl" style="display: none;">
+          <label>Orientation</label>
+          <div class="radio-group">
+            <div class="radio-card active" data-value="portrait">
+              <input type="radio" name="orientation" value="portrait" checked>
+              <i class="fa-solid fa-arrows-up-down"></i>
+              Portrait
+            </div>
+            <div class="radio-card" data-value="landscape">
+              <input type="radio" name="orientation" value="landscape">
+              <i class="fa-solid fa-arrows-left-right"></i>
+              Landscape
+            </div>
+          </div>
+        </div>
+
+        <!-- Margin Option -->
+        <div class="form-control">
+          <label for="pageMargins">Margins (mm)</label>
+          <input type="number" id="pageMargins" min="0" max="50" value="0">
+        </div>
+
+        <!-- Image Quality -->
+        <div class="form-control">
+          <label for="pdfQuality">Image Quality / Compression</label>
+          <select id="pdfQuality">
+            <option value="1.0">Original (Best Quality)</option>
+            <option value="0.8" selected>High (Recommended)</option>
+            <option value="0.6">Medium (Smaller File Size)</option>
+            <option value="0.4">Low (High Compression)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Action Button Panel -->
+      <button id="btnGenerate" class="btn-generate" disabled>
+        <i class="fa-solid fa-file-export"></i>
+        <span>Generate & Download PDF</span>
+      </button>
+
+      <!-- Quick Instructions -->
+      <div class="glass-panel instructions-panel">
+        <h4 style="font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-highlight);">
+          <i class="fa-solid fa-circle-info" style="color: var(--accent-primary);"></i>
+          Quick Tips
+        </h4>
+        <ul class="instructions-list">
+          <li>
+            <i class="fa-solid fa-check"></i>
+            <span>Drag thumbnails left/right to change the page order.</span>
+          </li>
+          <li>
+            <i class="fa-solid fa-check"></i>
+            <span>Use rotation buttons to fix vertical/horizontal layouts.</span>
+          </li>
+          <li>
+            <i class="fa-solid fa-check"></i>
+            <span>For CNICs, use "Auto" page size for a seamless fit.</span>
+          </li>
+        </ul>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-info">
+        <div class="footer-name">Bilal Faisal Arain</div>
+        <div class="footer-role">
+          <i class="fa-solid fa-code"></i> Full Stack Web Developer & QA Tester
+        </div>
+        <div class="footer-loc">
+          <i class="fa-solid fa-location-dot"></i> Karachi, Pakistan
+        </div>
+      </div>
+      <div class="footer-socials">
+        <a href="mailto:bilaifaisalarain@gmail.com" class="social-link" title="Email Me">
+          <i class="fa-solid fa-envelope"></i>
+        </a>
+        <a href="https://wa.me/923272190535" target="_blank" rel="noopener noreferrer" class="social-link" title="WhatsApp Chat">
+          <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <a href="https://github.com/bilaifaisaldev" target="_blank" rel="noopener noreferrer" class="social-link" title="GitHub Profile">
+          <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.instagram.com/bilal.faisalarain/" target="_blank" rel="noopener noreferrer" class="social-link" title="Instagram Profile">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+      </div>
+      <div class="footer-copyright">
+        &copy; 2026 Bilal Faisal Arain. All rights reserved. | Built with Privacy
+      </div>
+    </div>
+  </footer>
+
+  <!-- Include jsPDF Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Main Script -->
+  <script src="app.js"></script>
+</body>
+</html>
