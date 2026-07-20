@@ -6,7 +6,7 @@
 
 ## 🚀 Key Features
 
-*   **🔒 100% Private & Client-Side:** Your files never leave your computer. All image processing, rotation, compression, and PDF compilation are done directly in the browser via JavaScript.
+*   **🔒 100% Private & Client-Side:** Yourzz files never leave your computer. All image processing, rotation, compression, and PDF compilation are done directly in the browser via JavaScript.
 *   **🔄 Drag & Drop Reordering:** Arrange your pages effortlessly by dragging and dropping thumbnails in the interactive workspace grid.
 *   **↩️ Rotation Controls:** Rotate individual images by 90-degree increments directly inside the workspace before compiling to correct any vertical/horizontal alignment issues.
 *   **⚙️ Advanced PDF Settings:**
